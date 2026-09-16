@@ -1,0 +1,203 @@
+{
+  "$defs": {
+    "ChartConfig": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "pattern": "^[a-zA-Z0-9_-]{1,64}$",
+          "title": "Id",
+          "type": "string"
+        },
+        "chart_number": {
+          "minimum": 1,
+          "title": "Chart Number",
+          "type": "integer"
+        },
+        "snapshot_path": {
+          "minLength": 1,
+          "title": "Snapshot Path",
+          "type": "string"
+        },
+        "export_id": {
+          "anyOf": [
+            {
+              "pattern": "^[0-9a-f]{32}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Export Id"
+        },
+        "source_mode": {
+          "default": "unknown",
+          "enum": [
+            "unknown",
+            "delayed",
+            "live",
+            "replay",
+            "synthetic"
+          ],
+          "title": "Source Mode",
+          "type": "string"
+        },
+        "expected_delay_seconds": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Expected Delay Seconds"
+        },
+        "export_stale_after_seconds": {
+          "default": 120,
+          "maximum": 86400,
+          "minimum": 1,
+          "title": "Export Stale After Seconds",
+          "type": "integer"
+        },
+        "studies": {
+          "items": {
+            "$ref": "#/$defs/StudyConfig"
+          },
+          "maxItems": 8,
+          "title": "Studies",
+          "type": "array"
+        },
+        "discover_exported_studies": {
+          "default": true,
+          "title": "Discover Exported Studies",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "id",
+        "chart_number",
+        "snapshot_path"
+      ],
+      "title": "ChartConfig",
+      "type": "object"
+    },
+    "DiscoveryConfig": {
+      "additionalProperties": false,
+      "properties": {
+        "enabled": {
+          "default": false,
+          "title": "Enabled",
+          "type": "boolean"
+        },
+        "directory": {
+          "minLength": 1,
+          "title": "Directory",
+          "type": "string"
+        },
+        "max_files": {
+          "default": 64,
+          "maximum": 64,
+          "minimum": 1,
+          "title": "Max Files",
+          "type": "integer"
+        },
+        "max_directory_entries": {
+          "default": 512,
+          "maximum": 4096,
+          "minimum": 1,
+          "title": "Max Directory Entries",
+          "type": "integer"
+        },
+        "max_total_bytes": {
+          "default": 16000000,
+          "maximum": 64000000,
+          "minimum": 1024,
+          "title": "Max Total Bytes",
+          "type": "integer"
+        },
+        "export_stale_after_seconds": {
+          "default": 120,
+          "maximum": 86400,
+          "minimum": 1,
+          "title": "Export Stale After Seconds",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "directory"
+      ],
+      "title": "DiscoveryConfig",
+      "type": "object"
+    },
+    "StudyConfig": {
+      "additionalProperties": false,
+      "properties": {
+        "key": {
+          "pattern": "^[a-zA-Z0-9_-]{1,64}$",
+          "title": "Key",
+          "type": "string"
+        },
+        "label": {
+          "maxLength": 128,
+          "minLength": 1,
+          "title": "Label",
+          "type": "string"
+        },
+        "study_id": {
+          "minimum": 1,
+          "title": "Study Id",
+          "type": "integer"
+        },
+        "subgraph_index": {
+          "maximum": 59,
+          "minimum": 0,
+          "title": "Subgraph Index",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "key",
+        "label",
+        "study_id",
+        "subgraph_index"
+      ],
+      "title": "StudyConfig",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "charts": {
+      "items": {
+        "$ref": "#/$defs/ChartConfig"
+      },
+      "maxItems": 64,
+      "title": "Charts",
+      "type": "array"
+    },
+    "discovery": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/DiscoveryConfig"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "max_snapshot_bytes": {
+      "default": 2000000,
+      "maximum": 10000000,
+      "minimum": 1024,
+      "title": "Max Snapshot Bytes",
+      "type": "integer"
+    }
+  },
+  "title": "BridgeConfig",
+  "type": "object"
+}

@@ -1,0 +1,621 @@
+{
+  "$defs": {
+    "BarPeriod": {
+      "additionalProperties": false,
+      "properties": {
+        "chart_data_type": {
+          "title": "Chart Data Type",
+          "type": "integer"
+        },
+        "intraday_bar_period_type": {
+          "title": "Intraday Bar Period Type",
+          "type": "integer"
+        },
+        "parameters": {
+          "items": {
+            "type": "integer"
+          },
+          "maxItems": 4,
+          "minItems": 4,
+          "title": "Parameters",
+          "type": "array"
+        },
+        "historical_bar_period_type": {
+          "title": "Historical Bar Period Type",
+          "type": "integer"
+        },
+        "historical_days_per_bar": {
+          "title": "Historical Days Per Bar",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "chart_data_type",
+        "intraday_bar_period_type",
+        "parameters",
+        "historical_bar_period_type",
+        "historical_days_per_bar"
+      ],
+      "title": "BarPeriod",
+      "type": "object"
+    },
+    "HistoryBar": {
+      "additionalProperties": false,
+      "properties": {
+        "bar_index": {
+          "minimum": 0,
+          "title": "Bar Index",
+          "type": "integer"
+        },
+        "bar_start_sc_datetime": {
+          "title": "Bar Start Sc Datetime",
+          "type": "number"
+        },
+        "bar_start_chart_time": {
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{6}$",
+          "title": "Bar Start Chart Time",
+          "type": "string"
+        },
+        "is_closed": {
+          "title": "Is Closed",
+          "type": "boolean"
+        },
+        "open": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Open"
+        },
+        "high": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "High"
+        },
+        "low": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Low"
+        },
+        "close": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Close"
+        },
+        "volume": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Volume"
+        },
+        "studies": {
+          "items": {
+            "$ref": "#/$defs/RawStudy"
+          },
+          "maxItems": 8,
+          "title": "Studies",
+          "type": "array"
+        }
+      },
+      "required": [
+        "bar_index",
+        "bar_start_sc_datetime",
+        "bar_start_chart_time",
+        "is_closed",
+        "open",
+        "high",
+        "low",
+        "close",
+        "volume",
+        "studies"
+      ],
+      "title": "HistoryBar",
+      "type": "object"
+    },
+    "RawLevel": {
+      "additionalProperties": false,
+      "properties": {
+        "price": {
+          "title": "Price",
+          "type": "number"
+        },
+        "volume": {
+          "minimum": 0,
+          "title": "Volume",
+          "type": "number"
+        },
+        "bid_volume": {
+          "minimum": 0,
+          "title": "Bid Volume",
+          "type": "number"
+        },
+        "ask_volume": {
+          "minimum": 0,
+          "title": "Ask Volume",
+          "type": "number"
+        },
+        "delta": {
+          "title": "Delta",
+          "type": "number"
+        }
+      },
+      "required": [
+        "price",
+        "volume",
+        "bid_volume",
+        "ask_volume",
+        "delta"
+      ],
+      "title": "RawLevel",
+      "type": "object"
+    },
+    "RawStudy": {
+      "additionalProperties": false,
+      "properties": {
+        "metadata": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/StudyMetadata"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "study_name": {
+          "anyOf": [
+            {
+              "maxLength": 4096,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Study Name"
+        },
+        "subgraph_name": {
+          "anyOf": [
+            {
+              "maxLength": 4096,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Subgraph Name"
+        },
+        "study_id": {
+          "minimum": 1,
+          "title": "Study Id",
+          "type": "integer"
+        },
+        "subgraph_index": {
+          "maximum": 59,
+          "minimum": 0,
+          "title": "Subgraph Index",
+          "type": "integer"
+        },
+        "value": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Value"
+        },
+        "reason": {
+          "anyOf": [
+            {
+              "enum": [
+                "study_unavailable",
+                "nonfinite_value"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Reason"
+        }
+      },
+      "required": [
+        "study_id",
+        "subgraph_index",
+        "value",
+        "reason"
+      ],
+      "title": "RawStudy",
+      "type": "object"
+    },
+    "StudyInput": {
+      "additionalProperties": false,
+      "properties": {
+        "index": {
+          "maximum": 127,
+          "minimum": 0,
+          "title": "Index",
+          "type": "integer"
+        },
+        "name": {
+          "maxLength": 4096,
+          "title": "Name",
+          "type": "string"
+        },
+        "type_code": {
+          "title": "Type Code",
+          "type": "integer"
+        },
+        "value": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "integer"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Value"
+        },
+        "reason": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Reason"
+        }
+      },
+      "required": [
+        "index",
+        "name",
+        "type_code",
+        "value",
+        "reason"
+      ],
+      "title": "StudyInput",
+      "type": "object"
+    },
+    "StudyMetadata": {
+      "additionalProperties": false,
+      "properties": {
+        "short_name": {
+          "anyOf": [
+            {
+              "maxLength": 4096,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Short Name"
+        },
+        "primary_color": {
+          "anyOf": [
+            {
+              "pattern": "^#[0-9a-fA-F]{6}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Primary Color"
+        },
+        "secondary_color": {
+          "anyOf": [
+            {
+              "pattern": "^#[0-9a-fA-F]{6}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Secondary Color"
+        },
+        "secondary_color_used": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Secondary Color Used"
+        },
+        "latest_data_color_raw": {
+          "anyOf": [
+            {
+              "pattern": "^#[0-9a-fA-F]{6}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Latest Data Color Raw"
+        },
+        "draw_style_code": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Draw Style Code"
+        },
+        "line_style_code": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Line Style Code"
+        },
+        "line_width": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Line Width"
+        },
+        "hide_study_setting_raw": {
+          "title": "Hide Study Setting Raw",
+          "type": "integer"
+        },
+        "graph_region_raw": {
+          "title": "Graph Region Raw",
+          "type": "integer"
+        },
+        "inputs": {
+          "items": {
+            "$ref": "#/$defs/StudyInput"
+          },
+          "maxItems": 128,
+          "title": "Inputs",
+          "type": "array"
+        }
+      },
+      "required": [
+        "short_name",
+        "primary_color",
+        "secondary_color",
+        "secondary_color_used",
+        "latest_data_color_raw",
+        "draw_style_code",
+        "line_style_code",
+        "line_width",
+        "hide_study_setting_raw",
+        "graph_region_raw",
+        "inputs"
+      ],
+      "title": "StudyMetadata",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": 1,
+      "title": "Schema Version",
+      "type": "integer"
+    },
+    "snapshot_time_unix_ms": {
+      "minimum": 0,
+      "title": "Snapshot Time Unix Ms",
+      "type": "integer"
+    },
+    "chart_number": {
+      "minimum": 1,
+      "title": "Chart Number",
+      "type": "integer"
+    },
+    "bar_index": {
+      "minimum": 0,
+      "title": "Bar Index",
+      "type": "integer"
+    },
+    "bar_start_sc_datetime": {
+      "title": "Bar Start Sc Datetime",
+      "type": "number"
+    },
+    "symbol": {
+      "maxLength": 256,
+      "minLength": 1,
+      "title": "Symbol",
+      "type": "string"
+    },
+    "last_price": {
+      "title": "Last Price",
+      "type": "number"
+    },
+    "vwap_scope": {
+      "const": "current_bar",
+      "title": "Vwap Scope",
+      "type": "string"
+    },
+    "vwap": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Vwap"
+    },
+    "volume": {
+      "minimum": 0,
+      "title": "Volume",
+      "type": "number"
+    },
+    "footprint_volume": {
+      "minimum": 0,
+      "title": "Footprint Volume",
+      "type": "number"
+    },
+    "footprint": {
+      "items": {
+        "$ref": "#/$defs/RawLevel"
+      },
+      "maxItems": 20000,
+      "title": "Footprint",
+      "type": "array"
+    },
+    "exporter_revision": {
+      "anyOf": [
+        {
+          "enum": [
+            "1.1",
+            "1.2",
+            "1.3",
+            "1.4",
+            "1.5",
+            "1.6"
+          ],
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Exporter Revision"
+    },
+    "export_id": {
+      "anyOf": [
+        {
+          "pattern": "^[0-9a-f]{32}$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Export Id"
+    },
+    "chart_timezone": {
+      "anyOf": [
+        {
+          "maxLength": 256,
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Chart Timezone"
+    },
+    "history": {
+      "anyOf": [
+        {
+          "items": {
+            "$ref": "#/$defs/HistoryBar"
+          },
+          "maxItems": 200,
+          "type": "array"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "History"
+    },
+    "bar_period": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/BarPeriod"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "studies": {
+      "items": {
+        "$ref": "#/$defs/RawStudy"
+      },
+      "maxItems": 8,
+      "title": "Studies",
+      "type": "array"
+    }
+  },
+  "required": [
+    "schema_version",
+    "snapshot_time_unix_ms",
+    "chart_number",
+    "bar_index",
+    "bar_start_sc_datetime",
+    "symbol",
+    "last_price",
+    "vwap_scope",
+    "vwap",
+    "volume",
+    "footprint_volume",
+    "footprint"
+  ],
+  "title": "RawSnapshot",
+  "type": "object"
+}

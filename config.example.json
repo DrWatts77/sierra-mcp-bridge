@@ -1,0 +1,11 @@
+{
+  "charts": [],
+  "discovery": {
+    "enabled": true,
+    "directory": "C:/SierraChart/Data/SierraMCPBridge",
+    "max_files": 64,
+    "max_directory_entries": 512,
+    "max_total_bytes": 16000000,
+    "export_stale_after_seconds": 120
+  }
+}

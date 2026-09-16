@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "exporter_revision": "1.2",
+  "bar_period": {
+    "chart_data_type": 2,
+    "intraday_bar_period_type": 0,
+    "parameters": [60, 0, 0, 0],
+    "historical_bar_period_type": 1,
+    "historical_days_per_bar": 0
+  },
+  "snapshot_time_unix_ms": 1800000000000,
+  "chart_number": 1,
+  "bar_index": 100,
+  "bar_start_sc_datetime": 46279.5,
+  "symbol": "SYNTHETIC_TEST",
+  "last_price": 100.25,
+  "vwap_scope": "current_bar",
+  "vwap": 100.125,
+  "volume": 20.0,
+  "footprint_volume": 20.0,
+  "footprint": [
+    {"price": 100.0, "volume": 10.0, "bid_volume": 0.0, "ask_volume": 0.0, "delta": 0.0},
+    {"price": 100.25, "volume": 10.0, "bid_volume": 0.0, "ask_volume": 0.0, "delta": 0.0}
+  ],
+  "studies": [{"study_id": 2, "subgraph_index": 0, "value": 99.875, "reason": null}]
+}

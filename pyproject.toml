@@ -1,0 +1,30 @@
+[build-system]
+requires = ["hatchling==1.29.0"]
+build-backend = "hatchling.build"
+
+[project]
+name = "sierra-mcp-bridge"
+version = "0.1.0"
+description = "Provider-independent, read-only Sierra Chart MCP bridge"
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
+classifiers = ["Development Status :: 3 - Alpha", "Operating System :: Microsoft :: Windows"]
+requires-python = ">=3.12,<3.15"
+dependencies = ["fastmcp==4.0.3"]
+
+[project.scripts]
+sierra-mcp-bridge = "sierra_mcp_bridge.server:main"
+sierra-mcp-setup = "sierra_mcp_bridge.setup:main"
+
+[dependency-groups]
+dev = ["pytest==8.4.2"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/sierra_mcp_bridge"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.hatch.build.targets.sdist]
+include = ["docs/first_install_test.md", "CONTRIBUTING.md", "THIRD_PARTY.md", "LICENSE", "docs/discovery.md", "tests/test_chart_inventory.py", "src/sierra_mcp_bridge/chart_inventory.py", ".gitignore", "CHANGELOG.md", "README.md", "acsil/sierra_mcp_bridge.cpp", "config.example.json", "connection.example.json", "docs/connections.md", "docs/installation.md", "docs/limitations.md", "docs/service_setup.md", "pyproject.toml", "schemas/bridge-config.schema.json", "schemas/snapshot-v1.schema.json", "scripts/Exposure-Common.ps1", "scripts/Manage-SierraMCPService.ps1", "scripts/Run-SierraMCPService.ps1", "scripts/Set-EntraClientSecret.ps1", "scripts/Start-EntraBridge.ps1", "scripts/Start-SierraMCPExposure.ps1", "scripts/Stop-SierraMCPExposure.ps1", "scripts/export_schemas.py", "scripts/test.ps1", "src/sierra_mcp_bridge/__init__.py", "src/sierra_mcp_bridge/auth.py", "src/sierra_mcp_bridge/config.py", "src/sierra_mcp_bridge/contracts.py", "src/sierra_mcp_bridge/discovery.py", "src/sierra_mcp_bridge/guidance.py", "src/sierra_mcp_bridge/operating_guide.md", "src/sierra_mcp_bridge/reader.py", "src/sierra_mcp_bridge/server.py", "src/sierra_mcp_bridge/setup.py", "src/sierra_mcp_bridge/timeframe.py", "src/sierra_mcp_bridge/windows_service.py", "tests/conftest.py", "tests/fixtures/snapshot.json", "tests/test_discovery.py", "tests/test_entra.py", "tests/test_exposure.ps1", "tests/test_history.py", "tests/test_mcp.py", "tests/test_metadata_guidance.py", "tests/test_reader.py", "tests/test_export_identity.py", "tests/export_identity_native.cpp", "scripts/test-native.ps1", "tests/test_setup.py", "tests/test_timeframe.py", "tests/test_windows_service.py", "uv.lock"]

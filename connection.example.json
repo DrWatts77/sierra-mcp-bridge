@@ -1,0 +1,8 @@
+{
+  "auth": "entra",
+  "port": 8765,
+  "public_url": "https://your-assigned-domain.ngrok-free.dev",
+  "client_id": "11111111-1111-4111-8111-111111111111",
+  "tenant_id": "22222222-2222-4222-8222-222222222222",
+  "client_redirect": "https://chatgpt.com/connector_platform_oauth_redirect"
+}
