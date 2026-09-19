@@ -77,8 +77,9 @@ def create_server(config: BridgeConfig, token: str | None = None, *, auth=None) 
                      "Export time is not market-event time. Unavailable bid/ask data is not balanced order flow. "
                      "Use response timeframe metadata, not configured labels, for the hosting chart's period. "
                      "A study can internally reference other charts; hosting-chart period does not establish its internal inputs. "
-                     "Latest bar and study values may change until bar close. History is at most 200 loaded bars "
-                     "recalculated with current study settings, not a point-in-time archive. No order tools exist.")
+                     "Latest bar and study values may change until bar close. History is bounded by the exporter's "
+                     "configured window (up to 200,000 loaded bars), recalculated with current study settings, "
+                     "not a point-in-time archive. No order tools exist.")
     annotations = {"readOnlyHint": True, "destructiveHint": False, "idempotentHint": True, "openWorldHint": False}
 
     @server.tool(annotations=annotations)
@@ -93,7 +94,7 @@ def create_server(config: BridgeConfig, token: str | None = None, *, auth=None) 
                                       warnings=result.warnings, symbol=result.data.symbol if result.data else None))
         return StartupContext(capabilities=["list_charts", "list_studies", "get_snapshot", "get_study_values",
                                              "get_footprint", "get_data_health", "get_study_history"],
-                              limitations=["history_last_200_loaded_bars", "market_freshness_unknown", "vap_unverified",
+                              limitations=["history_bounded_by_exporter_window", "market_freshness_unknown", "vap_unverified",
                                            "no_account_or_order_tools", "no_autonomous_worker"],
                               instructions=GUIDE, toolsets=TOOLSETS, charts=charts, discovery_warnings=dict(reader.warnings),
                               recommended_next_action="Call list_studies for the chart the user means; use the sole chart if unambiguous.")
@@ -163,12 +164,13 @@ def create_server(config: BridgeConfig, token: str | None = None, *, auth=None) 
 
     @server.tool(annotations=annotations)
     def get_study_history(chart_id: ChartID, study_key: StudyKey,
-                          limit: Annotated[int, Field(ge=1, le=200)] = 200,
+                          limit: Annotated[int, Field(ge=1, le=200000)] = 200,
                           closed_only: bool = False) -> Envelope[StudyHistoryData]:
-        """Read last up to 200 loaded bars with OHLCV, study values, chart-local timestamps and timeframe.
+        """Read loaded bars with OHLCV, study values, chart-local timestamps and timeframe, up to the
+        exporter's configured history window (up to 200,000 bars; check available_bars for the actual count).
 
         Includes the forming bar by default. Current calculations can repaint; this is not an as-of archive.
-        Filtering closed bars can return at most 199 when the exported window contains 200 bars.
+        Filtering closed bars can return one fewer than the exported window's bar count.
         """
         reader = ChartInventory(config)
         chart = reader.charts.get(chart_id)

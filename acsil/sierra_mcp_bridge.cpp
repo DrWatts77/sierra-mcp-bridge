@@ -1,4 +1,3 @@
-#include "sierrachart.h"
 #include <fstream>
 #include <iomanip>
 #include <locale>
@@ -6,8 +5,8 @@
 #include <chrono>
 #include <cmath>
 #include <cstring>
-#include <objbase.h>
-#pragma comment(lib, "ole32.lib")
+#include <random>
+#include "sierrachart.h"
 
 SCDLLName("SierraMCPBridge")
 
@@ -38,12 +37,13 @@ bool EnsureExportIdentity(void* storage, bool reset)
     if (!reset)
         for (size_t i = 0; i < sizeof(identity); ++i)
             if (static_cast<const unsigned char*>(storage)[i]) return false;
-    GUID guid;
-    if (FAILED(CoCreateGuid(&guid))) return false;
+    // Generate a 128-bit export identity without requiring an external
+    // Windows COM/OLE library. This keeps Sierra Chart Remote Build portable.
+    std::random_device rd;
     std::ostringstream value;
-    value << std::hex << std::setfill('0') << std::setw(8) << guid.Data1
-        << std::setw(4) << guid.Data2 << std::setw(4) << guid.Data3;
-    for (unsigned char byte : guid.Data4) value << std::setw(2) << static_cast<unsigned int>(byte);
+    value << std::hex << std::setfill('0');
+    for (int part = 0; part < 4; ++part)
+        value << std::setw(8) << static_cast<uint32_t>(rd());
     std::memcpy(identity.magic, "SMBID001", 8);
     std::memcpy(identity.id, value.str().c_str(), 33);
     std::memcpy(storage, &identity, sizeof(identity));
@@ -182,6 +182,13 @@ std::string JsonString(const char* text)
     out << '"';
     return out.str();
 }
+
+// Display order: Input[0] output path, Input[1] history window, Input[2] reset
+// identity, then all 25 export slots contiguously at Input[3..27].
+int SlotInputIndex(int slot)
+{
+    return slot + 2;
+}
 }
 
 SCSFExport scsf_SierraMCPBridge(SCStudyInterfaceRef sc)
@@ -198,12 +205,16 @@ SCSFExport scsf_SierraMCPBridge(SCStudyInterfaceRef sc)
         sc.CalculationPrecedence = VERY_LOW_PREC_LEVEL;
         OutputPath.Name = "Snapshot output path (unique per study instance)";
         OutputPath.SetString("");
-        sc.Input[9].Name = "Reset export identity once (for copied studies; save chartbook afterward)";
-        sc.Input[9].SetYesNo(0);
-        for (int slot = 1; slot <= 8; ++slot)
+        sc.Input[1].Name = "History bars to export (1-200000; exceeding loaded bars exports all of them)";
+        sc.Input[1].SetInt(1000);
+        sc.Input[1].SetIntLimits(1, 200000);
+        sc.Input[2].Name = "Reset export identity once (for copied studies; save chartbook afterward)";
+        sc.Input[2].SetYesNo(0);
+        for (int slot = 1; slot <= 25; ++slot)
         {
-            sc.Input[slot].Name.Format("Export study/subgraph %d (study ID 0 disables)", slot);
-            sc.Input[slot].SetStudySubgraphValues(0, 0);
+            SCInputRef input = sc.Input[SlotInputIndex(slot)];
+            input.Name.Format("Export study/subgraph %d (study ID 0 disables)", slot);
+            input.SetStudySubgraphValues(0, 0);
         }
         return;
     }
@@ -218,7 +229,7 @@ SCSFExport scsf_SierraMCPBridge(SCStudyInterfaceRef sc)
     int idx = sc.ArraySize - 1;
     if (idx < 0) return;
 
-    const bool reset = sc.Input[9].GetYesNo() != 0;
+    const bool reset = sc.Input[2].GetYesNo() != 0;
     if (reset)
     {
         delete static_cast<ExportWriter*>(writerPointer);
@@ -231,7 +242,7 @@ SCSFExport scsf_SierraMCPBridge(SCStudyInterfaceRef sc)
         identityError = 1;
         return;
     }
-    if (reset) sc.Input[9].SetYesNo(0);
+    if (reset) sc.Input[2].SetYesNo(0);
     ExportIdentity identity;
     std::memcpy(&identity, sc.StorageBlock, sizeof(identity));
     const std::string directory = std::string(sc.DataFilesFolder().GetChars()) + "\\SierraMCPBridge";
@@ -301,22 +312,22 @@ SCSFExport scsf_SierraMCPBridge(SCStudyInterfaceRef sc)
     }
 
     std::ostringstream studies;
-    SCFloatArray selectedValues[8];
-    unsigned int selectedIDs[8] = {};
-    unsigned int selectedSubgraphs[8] = {};
-    bool selectedAvailable[8] = {};
+    SCFloatArray selectedValues[25];
+    unsigned int selectedIDs[25] = {};
+    unsigned int selectedSubgraphs[25] = {};
+    bool selectedAvailable[25] = {};
     studies.imbue(std::locale::classic());
     studies << std::setprecision(15);
     bool firstStudy = true;
-    for (int slot = 1; slot <= 8; ++slot)
+    for (int slot = 1; slot <= 25; ++slot)
     {
-        const unsigned int studyID = sc.Input[slot].GetStudyID();
-        const unsigned int subgraph = sc.Input[slot].GetSubgraphIndex();
+        const unsigned int studyID = sc.Input[SlotInputIndex(slot)].GetStudyID();
+        const unsigned int subgraph = sc.Input[SlotInputIndex(slot)].GetSubgraphIndex();
         if (studyID == 0) continue;
         bool duplicate = false;
         for (int previous = 1; previous < slot; ++previous)
-            if (sc.Input[previous].GetStudyID() == studyID
-                && sc.Input[previous].GetSubgraphIndex() == subgraph) duplicate = true;
+            if (sc.Input[SlotInputIndex(previous)].GetStudyID() == studyID
+                && sc.Input[SlotInputIndex(previous)].GetSubgraphIndex() == subgraph) duplicate = true;
         if (duplicate) continue;
         SCFloatArray& values = selectedValues[slot - 1];
         selectedIDs[slot - 1] = studyID;
@@ -344,7 +355,10 @@ SCSFExport scsf_SierraMCPBridge(SCStudyInterfaceRef sc)
     std::ostringstream history;
     history.imbue(std::locale::classic());
     history << std::setprecision(15);
-    const int start = idx >= 199 ? idx - 199 : 0;
+    int historyWindow = sc.Input[1].GetInt();
+    if (historyWindow < 1) historyWindow = 1;
+    if (historyWindow > 200000) historyWindow = 200000;
+    const int start = idx >= (historyWindow - 1) ? idx - (historyWindow - 1) : 0;
     for (int bar = start; bar <= idx; ++bar)
     {
         if (bar != start) history << ',';
@@ -363,7 +377,7 @@ SCSFExport scsf_SierraMCPBridge(SCStudyInterfaceRef sc)
             << ",\"volume\":" << (sc.Volume[bar] < 0 ? "null" : JsonNumber(sc.Volume[bar]))
             << ",\"studies\":[";
         bool firstValue = true;
-        for (int slot = 0; slot < 8; ++slot)
+        for (int slot = 0; slot < 25; ++slot)
         {
             if (selectedIDs[slot] == 0) continue;
             if (!firstValue) history << ',';

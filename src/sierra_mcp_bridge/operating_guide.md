@@ -20,7 +20,7 @@ Use get_study_values for the selected output and get_snapshot for latest chart p
 
 ## Recent history
 
-Use get_study_history with a bounded limit up to 200 and optional closed_only. Rows are oldest first; by default the last row is forming. At most 199 closed rows are available in a full window. Fewer loaded bars yield fewer rows. Chart-local timestamps use the returned Sierra timezone string, not an assumed UTC zone. Current metadata applies to the export, not a record of past settings/colors. Study history reflects current calculations, can repaint and is not a point-in-time archive or a backtest. Deterministic code must perform numerical research, accounting and risk checks.
+Use get_study_history with a bounded limit up to the exporter's configured history window (up to 200,000; check available_bars) and optional closed_only. Rows are oldest first; by default the last row is forming. Filtering to closed bars returns one fewer than the exported window's bar count. Fewer loaded bars yield fewer rows. Chart-local timestamps use the returned Sierra timezone string, not an assumed UTC zone. Current metadata applies to the export, not a record of past settings/colors. Study history reflects current calculations, can repaint and is not a point-in-time archive or a backtest. Deterministic code must perform numerical research, accounting and risk checks.
 
 ## Footprints and health
 

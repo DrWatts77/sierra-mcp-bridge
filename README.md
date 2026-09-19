@@ -12,7 +12,7 @@ charts. Independent installation and broader lifecycle validation are ongoing.
 
 - Optional bounded chart discovery, saved exporter IDs and explicit paths.
 - Chart symbol/timeframe and selected study names, settings, colors and values.
-- Up to 200 loaded bars of history, with forming-bar status and quality warnings.
+- Up to 200,000 loaded bars of history (configurable per chart, default 1,000), with forming-bar status and quality warnings.
 - Microsoft Entra OAuth, optional ngrok exposure and optional NSSM services.
 
 Tools: `get_startup_context`, `list_charts`, `list_studies`, `get_snapshot`,

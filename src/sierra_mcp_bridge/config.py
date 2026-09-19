@@ -26,7 +26,7 @@ class ChartConfig(ConfigModel):
     source_mode: Literal["unknown", "delayed", "live", "replay", "synthetic"] = "unknown"
     expected_delay_seconds: int | None = Field(default=None, ge=0)
     export_stale_after_seconds: int = Field(default=120, ge=1, le=86400)
-    studies: list[StudyConfig] = Field(default_factory=list, max_length=8)
+    studies: list[StudyConfig] = Field(default_factory=list, max_length=25)
     discover_exported_studies: bool = True
 
     @model_validator(mode="after")
@@ -46,14 +46,14 @@ class DiscoveryConfig(ConfigModel):
     directory: str = Field(min_length=1)
     max_files: int = Field(default=64, ge=1, le=64)
     max_directory_entries: int = Field(default=512, ge=1, le=4096)
-    max_total_bytes: int = Field(default=16_000_000, ge=1024, le=64_000_000)
+    max_total_bytes: int = Field(default=16_000_000, ge=1024, le=200_000_000)
     export_stale_after_seconds: int = Field(default=120, ge=1, le=86400)
 
 
 class BridgeConfig(ConfigModel):
     charts: list[ChartConfig] = Field(default_factory=list, max_length=64)
     discovery: DiscoveryConfig | None = None
-    max_snapshot_bytes: int = Field(default=2_000_000, ge=1024, le=10_000_000)
+    max_snapshot_bytes: int = Field(default=2_000_000, ge=1024, le=100_000_000)
 
     @model_validator(mode="after")
     def unique_charts(self):

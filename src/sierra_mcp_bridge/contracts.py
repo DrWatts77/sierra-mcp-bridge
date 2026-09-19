@@ -74,7 +74,7 @@ class BarData(Model):
 
 
 class HistoryBar(BarData):
-    studies: list[RawStudy] = Field(max_length=8)
+    studies: list[RawStudy] = Field(max_length=25)
 
 
 class RawSnapshot(Model):
@@ -94,9 +94,9 @@ class RawSnapshot(Model):
     exporter_revision: Literal["1.1", "1.2", "1.3", "1.4", "1.5", "1.6"] | None = None
     export_id: str | None = Field(default=None, pattern=r"^[0-9a-f]{32}$")
     chart_timezone: str | None = Field(default=None, max_length=256)
-    history: list[HistoryBar] | None = Field(default=None, max_length=200)
+    history: list[HistoryBar] | None = Field(default=None, max_length=200000)
     bar_period: BarPeriod | None = None
-    studies: list[RawStudy] = Field(default_factory=list, max_length=8)
+    studies: list[RawStudy] = Field(default_factory=list, max_length=25)
 
     @model_validator(mode="after")
     def unique_studies(self):
@@ -109,9 +109,10 @@ class RawSnapshot(Model):
         if self.exporter_revision in ("1.3", "1.4", "1.5", "1.6") and (self.history is None or self.chart_timezone is None):
             raise ValueError("Exporter 1.3 requires history and timezone")
         if self.history is not None:
-            expected = list(range(max(0, self.bar_index - 199), self.bar_index + 1))
+            window = len(self.history)
+            expected = list(range(max(0, self.bar_index - (window - 1)), self.bar_index + 1))
             if [bar.bar_index for bar in self.history] != expected:
-                raise ValueError("History must cover the last up to 200 contiguous loaded bars")
+                raise ValueError("History must cover the last contiguous loaded bars ending at bar_index")
             pairs = {(s.study_id, s.subgraph_index) for s in self.studies}
             for bar in self.history:
                 keys = [(s.study_id, s.subgraph_index) for s in bar.studies]

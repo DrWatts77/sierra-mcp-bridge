@@ -7,7 +7,8 @@ provenance and volume units are unverified. A Numbers Bars value is an observed
 output, not independent aggressor-volume evidence. VWAP is latest-bar VAP-weighted
 price, not session VWAP or independently validated market truth.
 
-History is a replaceable window of up to 200 loaded bars, including a forming bar.
+History is a replaceable window of up to 200,000 loaded bars (configurable per chart via
+the exporter's "History bars to export" input; defaults to 1,000), including a forming bar.
 Current settings/calculations may repaint past rows. It is not a point-in-time
 archive or lossless event stream. Separate calls can see different snapshots.
 Chart-local timestamps use Sierra's reported timezone, not assumed UTC.

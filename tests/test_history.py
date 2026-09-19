@@ -48,7 +48,7 @@ def test_history_http(setup_bridge, raw, tmp_path):
             assert data["data"]["chart_timezone"] == "UTC"
             assert data["data"]["includes_forming_bar"]
             assert "studies" not in data["data"]["bars"][0]  # only requested mapping returned
-            for args in [dict(limit=201), dict(limit=0), dict(study_key="unlisted")]:
+            for args in [dict(limit=200001), dict(limit=0), dict(study_key="unlisted")]:
                 request = {"chart_id": "first", "study_key": "ema", **args}
                 response = await client.call_tool("get_study_history", request, raise_on_error=False)
                 if "limit" in args:

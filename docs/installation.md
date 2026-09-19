@@ -16,7 +16,7 @@ Data folder or copy the Sierra installation into this repository.
    source if needed for rollback.
 2. Build through Sierra's custom-study workflow using installed headers.
 3. Add **Sierra MCP Bridge** once to each desired chart.
-4. Select study IDs/subgraphs in the eight export slots. Study ID 0 disables a slot.
+4. Select study IDs/subgraphs in the 25 export slots. Study ID 0 disables a slot.
    Merely adding a study to a chart does not select it for export.
 5. Leave **Snapshot output path** blank. The file is
    `<Sierra Data>/SierraMCPBridge/mcp_<export_id>.json`. Save the chartbook after

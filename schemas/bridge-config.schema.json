@@ -67,7 +67,7 @@
           "items": {
             "$ref": "#/$defs/StudyConfig"
           },
-          "maxItems": 8,
+          "maxItems": 25,
           "title": "Studies",
           "type": "array"
         },
@@ -114,7 +114,7 @@
         },
         "max_total_bytes": {
           "default": 16000000,
-          "maximum": 64000000,
+          "maximum": 200000000,
           "minimum": 1024,
           "title": "Max Total Bytes",
           "type": "integer"
@@ -192,7 +192,7 @@
     },
     "max_snapshot_bytes": {
       "default": 2000000,
-      "maximum": 10000000,
+      "maximum": 100000000,
       "minimum": 1024,
       "title": "Max Snapshot Bytes",
       "type": "integer"

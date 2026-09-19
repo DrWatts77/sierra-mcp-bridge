@@ -120,7 +120,7 @@
           "items": {
             "$ref": "#/$defs/RawStudy"
           },
-          "maxItems": 8,
+          "maxItems": 25,
           "title": "Studies",
           "type": "array"
         }
@@ -572,7 +572,7 @@
           "items": {
             "$ref": "#/$defs/HistoryBar"
           },
-          "maxItems": 200,
+          "maxItems": 200000,
           "type": "array"
         },
         {
@@ -597,7 +597,7 @@
       "items": {
         "$ref": "#/$defs/RawStudy"
       },
-      "maxItems": 8,
+      "maxItems": 25,
       "title": "Studies",
       "type": "array"
     }
